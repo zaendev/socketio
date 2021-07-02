@@ -2,15 +2,16 @@
 
 <head>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.1.2/socket.io.min.js"></script>
-    <script src="js/main.js"></script>
+    <!-- <script src="js/main.js"></script> -->
 </head>
 
 <body>
     <input type="text" class="message">
     <button onclick="sendMessage()">Send Message</button>
+    <button onclick="notifikasi()">Enable notifications</button>
 
     <script>
-        const socket = io('https://zainws.herokuapp.com')
+        const socket = io('http://localhost:3002')
         socket.on('connection')
 
         const sendMessage = () => {
@@ -21,6 +22,7 @@
         }
 
         socket.on('message', (data) => {
+            notifikasi(data)
             console.log(data)
         })
 
@@ -35,6 +37,38 @@
                     });
             });
         }
+
+        if (Notification.permission === "granted") {
+            alert("we have permission");
+        } else if (Notification.permission !== "denied") {
+            Notification.requestPermission().then(permission => {
+                console.log(permission);
+            });
+        }
+
+        function notifikasi(message) {
+            if (!Notification) {
+                alert('Browsermu tidak mendukung Web Notification.');
+                return;
+            }
+            if (Notification.permission !== "granted")
+                Notification.requestPermission();
+
+            else {
+                var notifikasi = new Notification('Judul Notifikasi', {
+                    icon: '',
+                    body: message,
+                });
+                notifikasi.onclick = function () {
+                    window.open("http://google.com");
+                };
+
+                console.log(notifikasi)
+                setTimeout(function () {
+                    notifikasi.close();
+                }, 5000);
+            }
+        };
     </script>
 </body>
 
